@@ -3,8 +3,6 @@ Arduino stuff I want to make public.
 
 ## Pocket RNG
 
-Arduino code: [pocket_rng/pocket_rng.ino](pocket_rng/pocket_rng.ino)
-
 I'm frequently indecisive and also a bit of a lover of chaos, so I like the idea of making as many choices as possible at random (I could go on a long rant about simulated annealing as a life philosophy, but that's a topic for another time). Unfortunately, I know that the human mind is incapable of anything resembling true randomness, it isn't always convenient to find a surface on which to roll dice, and I do enough work with software to not trust any random number generation phone apps (or phone apps in general, really).
 
 However, I also do enough work with cryptographic hardware to be vaguely aware of the available TRNG offerings, and just enough hobbyist electronics tinkering to be able to work with them. So, after far too many software and soldering errors, I now have a pocket-sized device capable of answering any questions you might encounter in life with true hardware-derived randomness (some translation from die rolls or hex blobs into words may be required).
@@ -16,6 +14,13 @@ The underlying cryptographic module generates randomness as bytes, not specific 
 So far it's only had a hand in deciding dinner plans, but I haven't done anything all that interesting the past few days so it hasn't had any real chances to shine.
 
 [1] If you're generating a number between 1 and n, the odds of it needing to re-roll with my current code are (2^24 mod n)/(2^24), which maxes out at approximately 0.0001% for a d20 or d100. And even if it does take two or three iterations, that's still an imperceptibly small amount of time. (And if I really wanted to optimize it even further, I could, but I got lazy and didn't want to have to think about int overflow errors.)
+
+### Code and required libraries:
+
+* Core code: [pocket_rng/pocket_rng.ino](pocket_rng/pocket_rng.ino)
+* Library: [Adafruit_GFX.h](https://github.com/adafruit/Adafruit-GFX-Library)
+* Library: [Adafruit_SSD1306.h](https://github.com/adafruit/Adafruit_SSD1306)
+* Library: [OPTIGATrustM.h](https://github.com/Infineon/arduino-optiga-trust-m)
 
 ### Random hardware notes:
 
