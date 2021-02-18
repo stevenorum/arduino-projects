@@ -26,6 +26,30 @@ int lastButtonStates[] = {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH};
 unsigned long lastDebounceTimes[] = {0,0,0,0,0,0,0,0,};
 int buttonValues[] = {2,4,6,8,10,12,20,100};
 unsigned long debounceDelay = 50;
+int specialIndex = 0;
+
+char eightBallResponses[30][30] = { // weird spacing is to make the line breaks clean
+                                   "It is certain.",
+                                   "It is decidedly so.",
+                                   "Without a doubt.",
+                                   "Yes - definitely.",
+                                   "You may rely on it.",
+                                   "As I see it, yes.",
+                                   "Most likely.",
+                                   "Outlook good.",
+                                   "Yes.",
+                                   "Signs point to yes.",
+                                   "Reply hazy, try      again.",
+                                   "Ask again later.",
+                                   "Better not tell you  now.",
+                                   "Cannot predict now.",
+                                   "Concentrate and ask  again.",
+                                   "Don't count on it.",
+                                   "My reply is no.",
+                                   "My sources say no.",
+                                   "Outlook not so good.",
+                                   "Very doubtful."
+};
 
 void resetDisplay() {
   display.clearDisplay();
@@ -102,20 +126,7 @@ void printFastTransition() {
   }
 }
 
-void printSlowTransition() {
-  for (int i = 0; i < 85; i++) {
-    resetDisplay();
-    display.setTextSize(1);
-    for (int j = 0; j < i+1; j++) {
-      display.print("?");
-    }
-    display.display();
-    // It takes long enough to update the display that I don't need an explicit delay here.
-  }
-}
-
-void rollDie(int range) {
-  printSlowTransition();
+int randInt(int range) {
   // The following code assumes 32-byte ints.
   // As I'm writing this for the Seeeduino XIAO,
   // which uses the SAMD21, that works.
@@ -123,6 +134,9 @@ void rollDie(int range) {
   unsigned int upper_bound = 16777216 - gap;
  roll:
   getRandom();
+  // If we wanted, instead of generating a new random blob immediately,
+  // we could first look deeper into the existing array of randomness.
+  // However, I'm lazy, this is easier to code, and the performance hit doesn't matter.
   unsigned int rval = rnd[0]*65536 + rnd[1]*256 + rnd[2];
   if (rval >= upper_bound) {
     // Doing this ensures that the number we're mod-ing is a multiple of the range.
@@ -130,7 +144,25 @@ void rollDie(int range) {
     // However, it does mean that this is probabilistic, not deterministic. Such is life.
     goto roll;
   }
-  int r = (rval%range)+1;
+  return (rval%range)+1;
+}
+
+void magicEightBall() {
+  int r = randInt(20);
+  printFastTransition();
+  resetDisplay();
+  display.setTextSize(1);
+  display.print("Magic 8 Ball says: ");
+  //display.print(r);
+  display.println();
+  display.println();
+  display.println(eightBallResponses[r-1]);
+  display.display();
+}
+
+void rollDie(int range) {
+  int r = randInt(range);
+  printFastTransition();
   resetDisplay();
   if (range == 2) {
     display.setTextSize(4);
@@ -147,7 +179,6 @@ void rollDie(int range) {
     display.print(r);
     display.println(" <<<");
   }
-  //delay(250);
   display.display();
 }
 
@@ -160,7 +191,13 @@ int checkButton(int i) {
     if (reading != buttonStates[i]) {
       buttonStates[i] = reading;
       if (buttonStates[i] == LOW) {
-        rollDie(buttonValues[i]);
+        if (i != specialIndex && buttonStates[specialIndex] == LOW) {
+          // The special button (coin flip) is being held down, so the other buttons now do different stuff.
+          // Right now it's just acting as a magic 8-ball regardless of the other button pressed.
+          magicEightBall();
+        } else {
+          rollDie(buttonValues[i]);
+        }
         lastButtonStates[i] = reading;
         return 0;
       }
@@ -193,3 +230,4 @@ void loop() {
     checkButton(i);
   }
 }
+B
