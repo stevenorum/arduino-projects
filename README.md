@@ -66,6 +66,6 @@ Here's all the stuff required to make your own. All the links are non-affiliate 
 * Hot glue + gun (for attaching the battery case to the back of the PCB, although you could also attach it a number of other ways or use one that solders directly to the PCB)
 * Wire strippers (for 30AWG wire, which is smaller than most will handle)
 * Flush cutters (for trimming wire ends after soldering)
-* X-Acto knife (for random cutting and trimming, like making the holes to bolt the standoffs to the )
+* X-Acto knife (for random cutting and trimming, like making the holes to bolt the standoffs to the base plate)
 * Multimeter (for checking soldered connections to ensure they work)
 * Graph paper and pencil (for planning out the exact part placement and wire paths in advance)
